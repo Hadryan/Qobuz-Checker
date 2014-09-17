@@ -1,0 +1,13 @@
+{
+    "manifest_version": 2,
+    "name": "Qobuz Checker",
+    "description": "__MSG_description__",
+    "default_locale": "en",
+    "version": "0.0.1",
+    "app": {
+        "launch": {
+            "local_path": "qc.html"
+        }
+    },
+    "permissions": ["storage", "unlimitedStorage", "http://www.qobuz.com/*"]
+}

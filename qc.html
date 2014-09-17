@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Qobuz Checker</title>
+        <link rel="stylesheet" href="qc.css">
+    </head>
+    <body>
+        <div class="container">
+            <input id="restoreh" type="file" accept=".json" hidden>
+            <input id="restore" type="button" class="button">
+            <input id="backup" type="button" class="button">
+            <div class="search-form">
+                <ul id="artistsresults" class="dropdown"></ul>
+                <input id="artistsname" type="text">
+                <button id="artistssearch" type="button" class="button">Go</button>
+            </div>
+        </div>
+        <div id="divArtists"></div>
+        <div id="divArtistsHidden" hidden></div>
+        <script src="qc.js"></script>
+    </body>
+</html>

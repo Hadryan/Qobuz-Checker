@@ -1,0 +1,21 @@
+{
+    "description": {
+        "message": "Tired of wrong published dates in Qobuz's RSS? Qobuz Checker allows you to track lossless music discographies."
+    },
+    // qc.html
+    "restore": {
+        "message": "Restore..."
+    },
+    "backup": {
+        "message": "Backup"
+    },
+    "name": {
+        "message": "Name"
+    },
+    "yes": {
+        "message": "Yes"
+    },
+    "no": {
+        "message": "No"
+    }
+}

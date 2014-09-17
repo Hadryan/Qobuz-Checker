@@ -1,0 +1,21 @@
+{
+    "description": {
+        "message": "Marre des dates de publications erronnées dans les RSS de Qobuz ? Qobuz Checker vous permet de suivre les discographies de musique sans perte."
+    },
+    // qc.html
+    "restore": {
+        "message": "Restaurer..."
+    },
+    "backup": {
+        "message": "Sauvegarder"
+    },
+    "name": {
+        "message": "Nom"
+    },
+    "yes": {
+        "message": "Oui"
+    },
+    "no": {
+        "message": "Non"
+    }
+}
