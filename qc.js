@@ -265,8 +265,8 @@ function insertAlbum(artist, recentness, divAlbum) {
 function updateProgress(artist, albumCount) {
     var progress                    = document.getElementById(artist + 'progress');
     var newProgress                 = parseFloat(parseFloat(progress.firstChild.style.width.split('%')[0]) + (albumCount != null ? (1 / albumCount) * (100 / langs.length) : (100 / langs.length)));
-    if (Math.round(newProgress * 100) / 100 == 100.00)
-        newProgress = 100.00;
+    if (Math.round(newProgress * 100) / 100 >= 100)
+        newProgress = 100;
     progress.firstChild.style.width  = newProgress + '%';
     progress.childNodes[1].nodeValue = parseInt(newProgress) + '%';
 }
