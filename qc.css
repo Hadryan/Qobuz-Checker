@@ -44,6 +44,10 @@ div#divArtists {
     margin: 5px auto;
     width: -webkit-fit-content;
     white-space: nowrap; }
+    div#divArtists.loading {
+        width: 128px;
+        height: 15px;
+        background: url(ajax-loader-big.gif) no-repeat; }
 
 div.artist {
     margin: 0 5px;

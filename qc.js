@@ -24,6 +24,7 @@ window.addEventListener('load', function() {
     file.setRequestHeader('Cache-Control', 'no-cache, must-revalidate');
     file.onreadystatechange = function() {
         if (file.readyState == XMLHttpRequest.DONE) {
+            divArtists.classList.remove('loading');
             if (file.status == 200) {
                 var response = file.responseText;
                 var regExp1  = /<li class="icon-country [^>]*>\s*<a href="([^"]*)/g;
@@ -253,11 +254,9 @@ function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, e
                                 }
                                 writeArtists();
                             }
-                            else {
-                                if (i != -1) {
-                                    albums.splice(i, 1);
-                                    writeArtists();
-                                }
+                            else if (i != -1) {
+                                albums.splice(i, 1);
+                                writeArtists();
                             }
                         }, false);
                         divArtistsHidden.appendChild(divAlbum);
@@ -323,17 +322,13 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
                     tracklist.push('<div class="row"><div class="cell">' + tmp[1].trim() + '</div><div class="cell">' + tmp[2].trim() + (tmp[3] != null ? ' ' + tmp[3].trim() : '') + '</div><div class="cell">' + tmp[4].trim() + '</div></div>');
                 var smr = response.match(/<div id="product-technical-informations-banner-right" [^>]*>\s*<span [^>]*>[^<]*<\/span>\s*<br \/>\s*<span>\s*(\S+)\s+\S+\s+\/\s+(\S+)\s+\S+\s+-\s+([^<]+)/);
                 if (smr != null) {
-                    tmp                               = smr[1] + ' / ' + smr[2] + ' / ' + smr[3].trim();
-                    divAlbum.firstElementChild.firstElementChild.name          = tmp;
-                    divAlbum.children[1].innerHTML += ' {' + tmp + '}';
-                    if (i != -1 && albums[i]['smr'] == tmp) {
-                        divAlbum.firstElementChild.firstElementChild.click();
-                        insertAlbum(artist, 'old', divAlbum);
-                    }
-                    else insertAlbum(artist, 'new', divAlbum);
+                    tmp                                               = smr[1] + ' / ' + smr[2] + ' / ' + smr[3].trim();
+                    divAlbum.firstElementChild.firstElementChild.name = tmp;
+                    divAlbum.children[1].innerHTML                   += ' {' + tmp + '}';
                 }
-                else if (i != -1) {
-                    divAlbum.firstElementChild.firstElementChild.click();
+                if (i != -1 && (smr == null || albums[i]['smr'] == tmp)) {
+                    divAlbum.firstElementChild.firstElementChild.checked = true;
+                    divAlbum.lastElementChild.classList.toggle('hidden');
                     insertAlbum(artist, 'old', divAlbum);
                 }
                 else insertAlbum(artist, 'new', divAlbum);
