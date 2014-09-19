@@ -117,8 +117,8 @@ artistssearch.addEventListener('click', function() {
 }, false);
 
 function parseResults(response) {
-    var regEx = /%%store_for_autocomplete%%\/interpreter\/([^\/]*)[^"]*"\s*class="overflow" rel="([^"]*)/g, tmp, output = '';
-    while ((tmp = regEx.exec(response)) != null) {
+    var regExp = /%%store_for_autocomplete%%\/interpreter\/([^\/]*)[^"]*"\s*class="overflow" rel="([^"]*)/g, tmp, output = '';
+    while ((tmp = regExp.exec(response)) != null) {
         if (!(tmp[1] in artists))
             output += '<li><a id="' + tmp[1] + '">' + tmp[2] + '</a></li>';
     }
