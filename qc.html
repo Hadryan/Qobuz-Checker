@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="qc.css">
     </head>
     <body>
-        <div class="container">
+        <div id="container" hidden>
             <input id="restoreh" type="file" accept=".json" hidden>
             <input id="restore" type="button" class="button">
             <input id="backup" type="button" class="button">
@@ -16,8 +16,19 @@
                 <button id="artistssearch" type="button" class="button">Go</button>
             </div>
         </div>
+
         <div id="divArtists"></div>
         <div id="divArtistsHidden" hidden></div>
+
+        <div id="confirmlight" class="light">
+            <span id="confirmtext"></span>
+            <div class="table">
+                <div class="cell"><input id="confirmyes" type="button" class="button"></div>
+                <div class="cell"><input id="confirmno" type="button" class="button"></div>
+            </div>
+        </div>
+        <div id="confirmfade" class="fade"></div>
+
         <script src="qc.js"></script>
     </body>
 </html>

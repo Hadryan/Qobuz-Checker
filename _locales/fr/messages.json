@@ -12,6 +12,25 @@
     "name": {
         "message": "Nom"
     },
+    // qc.js
+    "unreachable": {
+        "message": "Lien inaccessible"
+    },
+    "noresults": {
+        "message": "Aucun résultat trouvé"
+    },
+    "empty": {
+        "message": "Ce champ ne peut être vide"
+    },
+    "jsoncompliant": {
+        "message": "JSON non conforme"
+    },
+    "delete": {
+        "message": "Supprimer"
+    },
+    "confirm": {
+        "message": "Êtes-vous sûr(e) ?"
+    },
     "yes": {
         "message": "Oui"
     },

@@ -30,7 +30,11 @@ a {
         color: #0072ba;
         text-decoration: underline; }
 
-div.container {
+span {
+    font-weight: bold;
+    cursor: default; }
+
+div#container {
     position: relative;
     margin: 10px auto;
     width: -webkit-fit-content;
@@ -231,6 +235,7 @@ div.cell {
         border-radius: 0 0 2px 2px; }
 
 .alert {
+    margin-top: 5px;
     position: relative;
     line-height: 29px;
     padding: 0 10px;
@@ -243,6 +248,7 @@ div.cell {
     background-image: linear-gradient(to bottom, #feebd1, #fad6ab);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.05); }
     .alert.notice {
+        margin-top: 0;
         color: #465a6b;
         background: #d1ecfe;
         border-color: #a0c9f5 #95bfe5 #91b6dd;
@@ -251,10 +257,11 @@ div.cell {
         font-weight: bold; }
         .alert > a:first-child {
             padding-right: 31px; }
+    .alert > span {
+        padding-right: 31px; }
 
 .alert-close {
     cursor: pointer;
-    display: block;
     position: absolute;
     top: 50%;
     right: 0;
@@ -362,3 +369,44 @@ div.cell {
         border-radius: 9px;
         background-image: linear-gradient(to bottom, #f4f7f7, #e0e1e0);
         box-shadow: inset 0 1px white, 1px 0 1px rgba(0, 0, 0, 0.3); }
+
+.fade {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 1003;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.2s, opacity 0.2s linear; }
+    .fade.visible {
+        visibility: visible;
+        opacity: .80;
+        transition: opacity 0.2s linear; }
+
+.light {
+    position: fixed;
+    top: 25%;
+    width: -webkit-fit-content;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 12px;
+    border: 5px solid gray;
+    border-radius: 10px;
+    background-color: white;
+    z-index: 1004;
+    overflow-y: visible;
+    visibility: hidden;
+    opacity: 0; }
+    .light.visible {
+        visibility: visible;
+        opacity: 1;
+        transition: visibility 0s 0.2s; }
+    .light div.table {
+        margin-top: 5px; }
+    .light div.cell:first-child {
+        padding-left: 0; }
