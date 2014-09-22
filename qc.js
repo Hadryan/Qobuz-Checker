@@ -301,11 +301,11 @@ function updateProgress(artist, albumCount) {
     var newProgress = parseFloat(parseFloat(progress.firstElementChild.style.width.split('%')[0]) + (albumCount != null ? (1 / albumCount) * (100 / langs.length) : (100 / langs.length)));
     if (Math.round(newProgress * 100) / 100 >= 100) {
         newProgress                                                      = 100;
-        progress.parentElement.firstElementChild.lastElementChild.hidden = false;
         progress.hidden                                                  = true;
+        progress.parentElement.firstElementChild.lastElementChild.hidden = false;
     }
-    progress.firstElementChild.style.width  = newProgress + '%';
-    progress.childNodes[1].nodeValue        = parseInt(newProgress) + '%';
+    progress.firstElementChild.style.width = newProgress + '%';
+    progress.childNodes[1].nodeValue       = parseInt(newProgress) + '%';
 }
 
 function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount) {
