@@ -297,11 +297,12 @@ function insertAlbum(artist, recentness, divAlbum) {
 }
 
 function updateProgress(artist, albumCount) {
-    var progress                    = document.getElementById(artist + 'progress');
-    var newProgress                 = parseFloat(parseFloat(progress.firstElementChild.style.width.split('%')[0]) + (albumCount != null ? (1 / albumCount) * (100 / langs.length) : (100 / langs.length)));
+    var progress    = document.getElementById(artist + 'progress');
+    var newProgress = parseFloat(parseFloat(progress.firstElementChild.style.width.split('%')[0]) + (albumCount != null ? (1 / albumCount) * (100 / langs.length) : (100 / langs.length)));
     if (Math.round(newProgress * 100) / 100 >= 100) {
         newProgress                                                      = 100;
         progress.parentElement.firstElementChild.lastElementChild.hidden = false;
+        progress.hidden                                                  = true;
     }
     progress.firstElementChild.style.width  = newProgress + '%';
     progress.childNodes[1].nodeValue        = parseInt(newProgress) + '%';
