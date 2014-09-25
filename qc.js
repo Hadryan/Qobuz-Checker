@@ -3,6 +3,8 @@ var artists    = {};
 var chromeI18n = chrome.i18n.getMessage;
 var filesearch;
 var closestLang;
+var closestLangZone;
+var closestLangCode;
 
 for (var i = 0, tmp, elements = document.getElementsByTagName('*'), length = elements.length; i != length; i++) {
     tmp = elements[i].id;
@@ -38,7 +40,10 @@ window.addEventListener('load', function() {
                 while ((tmp = regExp2.exec(response)) != null)
                     langs.push(tmp[1], tmp[2]);
 
-                closestLang = file.responseURL.replace('http://www.qobuz.com', '');
+                closestLang     = file.responseURL.replace('http://www.qobuz.com', '');
+                tmp             = closestLang.split(/[\/-]+/);
+                closestLangZone = tmp[1].toUpperCase();
+                closestLangCode = tmp[2];
                 for (var i = 0, length = langs.length; i != length; i++) {
                     if (langs[i] == closestLang) {
                         closestLang = i;
@@ -101,7 +106,7 @@ artistssearch.addEventListener('click', function() {
     artistsname.classList.add('loading');
 
     filesearch = new XMLHttpRequest();
-    filesearch.open('GET', 'http://www.qobuz.com/qbPackageSearchEnginePlugin/php/autocomplete-proxy.php?utf8=%E2%9C%93&q=' + encodeURIComponent(string), true);
+    filesearch.open('GET', 'http://www.qobuz.com/qbPackageSearchEnginePlugin/php/autocomplete-proxy.php?utf8=%E2%9C%93&q=' + encodeURIComponent(string) + '&zone=' + closestLangZone + '&language_code=' + closestLangCode, true);
     filesearch.onreadystatechange = function() {
         if (filesearch.readyState == XMLHttpRequest.DONE) {
             artistsname.classList.remove('loading');
