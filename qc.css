@@ -222,8 +222,7 @@ div.cell {
         padding: 0 12px;
         color: #5a5a5a;
         text-decoration: none;
-        text-shadow: 0 1px white;
-        box-shadow: none; }
+        text-shadow: 0 1px white; }
         .dropdown > li > a:hover, .dropdown > li > a:focus {
             position: relative;
             z-index: 52;

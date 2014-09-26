@@ -1,10 +1,9 @@
 var langs      = [];
 var artists    = {};
+var files      = {};
 var chromeI18n = chrome.i18n.getMessage;
-var filesearch;
+var langsLength;
 var closestLang;
-var closestLangZone;
-var closestLangCode;
 
 for (var i = 0, tmp, elements = document.getElementsByTagName('*'), length = elements.length; i != length; i++) {
     tmp = elements[i].id;
@@ -40,11 +39,10 @@ window.addEventListener('load', function() {
                 while ((tmp = regExp2.exec(response)) != null)
                     langs.push(tmp[1], tmp[2]);
 
-                closestLang     = file.responseURL.replace('http://www.qobuz.com', '');
-                tmp             = closestLang.split(/[\/-]+/);
-                closestLangZone = tmp[1].toUpperCase();
-                closestLangCode = tmp[2];
-                for (var i = 0, length = langs.length; i != length; i++) {
+                closestLang = file.responseURL.replace('http://www.qobuz.com', '');
+                langsLength = langs.length;
+
+                for (var i = 0; i != langsLength; i++) {
                     if (langs[i] == closestLang) {
                         closestLang = i;
                         break;
@@ -90,6 +88,9 @@ artistsname.addEventListener('keypress', function(e) {
 }, false);
 
 artistssearch.addEventListener('click', function() {
+    for (var i = 0, errors = container.getElementsByClassName('alert-close'), length = errors.length; i != length; i++)
+        errors[i].click();
+
     var string = artistsname.value.trim();
     if (string == '') {
         showError(chromeI18n('empty'), null, container);
@@ -97,49 +98,59 @@ artistssearch.addEventListener('click', function() {
     }
     artistsresults.classList.remove('visible');
     artistsresults.innerHTML = '';
+    artistsname.classList.add('loading');
 
+    for (var i = 0; i != langsLength; i++)
+        searchLang(langs[i], string);
+}, false);
+
+function searchLang(lang, string) {
     try {
-        filesearch.abort();
+        files[lang].abort();
     }
     catch (err) {}
 
-    artistsname.classList.add('loading');
+    var tmp = lang.split(/[\/-]+/g);
 
-    filesearch = new XMLHttpRequest();
-    filesearch.open('GET', 'http://www.qobuz.com/qbPackageSearchEnginePlugin/php/autocomplete-proxy.php?utf8=%E2%9C%93&q=' + encodeURIComponent(string) + '&zone=' + closestLangZone + '&language_code=' + closestLangCode, true);
-    filesearch.onreadystatechange = function() {
-        if (filesearch.readyState == XMLHttpRequest.DONE) {
-            artistsname.classList.remove('loading');
-            if (filesearch.status == 200) {
-                var output               = parseResults(filesearch.responseText);
-                artistsresults.innerHTML = output;
-                if (output != '') {
-                    for (var i = 0, values = artistsresults.getElementsByTagName('a'), length = values.length; i != length; i++)
-                        values[i].addEventListener('click', function(e) {
+    files[lang] = new XMLHttpRequest();
+    files[lang].open('GET', 'http://www.qobuz.com/qbPackageSearchEnginePlugin/php/autocomplete-proxy.php?utf8=%E2%9C%93&q=' + encodeURIComponent(string) + '&zone=' + tmp[1] + '&language_code=' + tmp[2], true);
+    files[lang].onreadystatechange = function() {
+        if (files[lang].readyState == XMLHttpRequest.DONE) {
+            if (files[lang].status == 200) {
+                var response = files[lang].responseText;
+                var regExp   = /%%store_for_autocomplete%%\/interpreter\/([^\/]*)[^"]*"\s*class="overflow" rel="([^"]*)/g;
+                var children = artistsresults.children;
+                while ((tmp = regExp.exec(response)) != null) {
+                    if (!(tmp[1] in artists) && document.getElementById(tmp[1]) == null) {
+                        var li       = document.createElement('li');
+                        li.innerHTML = '<a id="' + tmp[1] + '">' + tmp[2] + '</a>';
+                        li.firstElementChild.addEventListener('click', function(e) {
                             artistsname.value = '';
                             var value         = e.target.id;
                             artists[value]    = [];
                             writeArtists();
                             checkArtist(value);
                         }, false);
-                    artistsresults.classList.add('visible');
+
+                        for (var i = 0, length = children.length; i != length && compareStrings(children[i].firstElementChild.innerHTML, tmp[2]) < 0; i++) {}
+                        artistsresults.insertBefore(li, i != length ? children[i] : null);
+                    }
                 }
+            }
+            else if (files[lang].status != 0)
+                showError(chromeI18n('unreachable'), '/qbPackageSearchEnginePlugin/php/autocomplete-proxy.php?utf8=%E2%9C%93&q=' + encodeURIComponent(string) + '&zone=' + tmp[1] + '&language_code=' + tmp[2], container);
+
+            for (var i = 0; i != langsLength && files[langs[i]].readyState == XMLHttpRequest.DONE; i++) {}
+            if (i == langsLength) {
+                artistsname.classList.remove('loading');
+
+                if (artistsresults.innerHTML != '')
+                    artistsresults.classList.add('visible');
                 else showError(chromeI18n('noresults'), null, container);
             }
-            else if (filesearch.status != 0)
-                showError(chromeI18n('unreachable'), '/qbPackageSearchEnginePlugin/php/autocomplete-proxy.php?utf8=%E2%9C%93&q=' + encodeURIComponent(string), container);
         }
     };
-    filesearch.send();
-}, false);
-
-function parseResults(response) {
-    var regExp = /%%store_for_autocomplete%%\/interpreter\/([^\/]*)[^"]*"\s*class="overflow" rel="([^"]*)/g, tmp, output = '';
-    while ((tmp = regExp.exec(response)) != null) {
-        if (!(tmp[1] in artists))
-            output += '<li><a id="' + tmp[1] + '">' + tmp[2] + '</a></li>';
-    }
-    return output;
+    files[lang].send();
 }
 
 restoreh.addEventListener('change', function(event) {
@@ -205,7 +216,7 @@ function checkArtist(artist) {
     for ( ; i != length && compareStrings(children[i].firstElementChild.firstElementChild.innerHTML, artist) < 0; i++) {}
     divArtists.insertBefore(divArtist, i != length ? children[i] : null);
 
-    for (var i = 0, length = langs.length; i != length; i++)
+    for (var i = 0; i != langsLength; i++)
         checkArtistPage(artists[artist], langs[i], i == closestLang, artist, divArtist, 1);
 }
 
@@ -303,7 +314,7 @@ function insertAlbum(artist, recentness, divAlbum) {
 
 function updateProgress(artist, albumCount) {
     var progress    = document.getElementById(artist + 'progress');
-    var newProgress = parseFloat(parseFloat(progress.firstElementChild.style.width.split('%')[0]) + (albumCount != null ? (1 / albumCount) * (100 / langs.length) : (100 / langs.length)));
+    var newProgress = parseFloat(parseFloat(progress.firstElementChild.style.width.split('%')[0]) + (albumCount != null ? (1 / albumCount) * (100 / langsLength) : (100 / langsLength)));
     if (Math.round(newProgress * 100) / 100 >= 100) {
         newProgress                                                      = 100;
         progress.hidden                                                  = true;
