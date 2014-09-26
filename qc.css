@@ -154,9 +154,13 @@ div.cell {
             position: relative;
             z-index: 2; }
         .search-form > input.loading {
-            background: url(ajax-loader.gif) no-repeat;
+            background: url(ajax-loader.gif) no-repeat, #fcfcfc;
             background-position: right 7px center;
             padding-right: 30px; }
+            .search-form > input.loading:focus {
+                background: url(ajax-loader.gif) no-repeat, white;
+                background-position: right 7px center;
+                padding-right: 30px; }
     .search-form > .button {
         position: absolute;
         top: 0;
