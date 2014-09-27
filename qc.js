@@ -201,7 +201,7 @@ function checkArtist(artist) {
     var divArtist       = document.createElement('div');
     divArtist.id        = artist;
     divArtist.className = 'artist';
-    divArtist.innerHTML = '<p class="alert notice"><a href="http://www.qobuz.com' + langs[closestLang] + 'interpreter/' + artist + '/download-streaming-albums" target="_blank">' + artist + '</a><a class="alert-close" title="' + chromeI18n('delete') + '" hidden>&times;</a></p><div id="' + artist + 'progress" class="progress"><span style="width: 0%"></span>0%</div><div id="' + artist + 'new" class="new"></div><div id="' + artist + 'old" class="old"></div>';
+    divArtist.innerHTML = '<p class="alert notice"><a target="_blank">' + artist + '</a><a class="alert-close" title="' + chromeI18n('delete') + '" hidden>&times;</a></p><div id="' + artist + 'progress" class="progress"><span style="width: 0%"></span>0%</div><div id="' + artist + 'new" class="new"></div><div id="' + artist + 'old" class="old"></div>';
     divArtist.firstElementChild.lastElementChild.addEventListener('click', function(e) {
         confirmyes.onclick = function() {
             divArtists.removeChild(e.target.parentElement.parentElement);
@@ -220,9 +220,7 @@ function checkArtist(artist) {
         checkArtistPage(artists[artist], langs[i], i == closestLang, artist, divArtist, 1);
 }
 
-function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, end, albumCount) {
-    if (page == end)
-        return;
+function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, albumCount) {
     var file = new XMLHttpRequest();
     file.open('GET', 'http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums?page=' + page, true);
     file.setRequestHeader('Pragma', 'no-cache');
@@ -232,16 +230,19 @@ function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, e
             if (file.status == 200 && file.responseURL.match(new RegExp('^http://www.qobuz.com' + lang + 'interpreter/'))) {
                 var response = file.responseText;
                 var realName = response.match(/<h1>([^<]*)/)[1];
-                if (divArtist.firstElementChild.firstElementChild.innerHTML == artist)
+                if (divArtist.firstElementChild.firstElementChild.href == '') {
+                    divArtist.firstElementChild.firstElementChild.href      = 'http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums';
                     divArtist.firstElementChild.firstElementChild.innerHTML = realName;
+                }
+                else if (isClosestLang && albumCount == null)
+                    divArtist.firstElementChild.firstElementChild.href = 'http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums';
 
-                if (end == null) {
-                    end    = 0;
+                var lastPage = 0;
+                if (albumCount == null) {
                     regExp = /\?page=([1-9][0-9]*)/g;
                     while ((tmp = regExp.exec(response)) != null)
-                        if (parseInt(tmp[1]) > end)
-                            end = parseInt(tmp[1]);
-                    end++;
+                        if (parseInt(tmp[1]) > lastPage)
+                            lastPage = parseInt(tmp[1]);
                     albumCount = response.match(/<i class="icon-info-sign"><\/i>\s*<b>([^<]*)/)[1];
                 }
 
@@ -285,8 +286,11 @@ function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, e
                         updateProgress(artist, albumCount);
                     }
                 }
-                if (end != 1)
-                    checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page + 1, end, albumCount);
+                if (lastPage != 0) {
+                    lastPage++;
+                    for (var i = 2; i != lastPage; i++)
+                        checkArtistPage(albums, lang, isClosestLang, artist, divArtist, i, albumCount);
+                }
             }
             else {
                 if (file.status != 200)
