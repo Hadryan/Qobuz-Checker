@@ -337,7 +337,7 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
         if (file.readyState == XMLHttpRequest.DONE) {
             if (file.status == 200) {
                 var response = file.responseText;
-                var regExp   = /<span class="track-number">\s*([^<]*)<\/span>\s*<span class="track-title" itemprop="name">\s*([^<]*)(?:<i>([^<]*)<\/i>\s*)?<\/span>\s*<\/span>\s*<div [^>]*>\s*<meta [^>]*>\s*<span [^>]*>\s*([^<]*)/g;
+                var regExp   = /<span class="track-number">\s*([^<]*)<\/span>\s*<span class="track-title"[^>]*>\s*([^<]*)(?:<i>([^<]*)<\/i>\s*)?<\/span>\s*<\/span>\s*<div [^>]*>\s*(?:<meta [^>]*>\s*)?<span [^>]*>\s*([^<]*)/g;
                 var tracklist = [], tmp;
                 while ((tmp = regExp.exec(response)) != null)
                     tracklist.push('<div class="row"><div class="cell">' + tmp[1].trim() + '</div><div class="cell">' + tmp[2].trim() + (tmp[3] != null ? ' ' + tmp[3].trim() : '') + '</div><div class="cell">' + tmp[4].trim() + '</div></div>');
