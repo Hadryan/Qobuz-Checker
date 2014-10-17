@@ -341,7 +341,7 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
                 var tracklist = [], tmp;
                 while ((tmp = regExp.exec(response)) != null)
                     tracklist.push('<div class="row"><div class="cell">' + tmp[1].trim() + '</div><div class="cell">' + tmp[2].trim() + (tmp[3] != null ? ' ' + tmp[3].trim() : '') + '</div><div class="cell">' + tmp[4].trim() + '</div></div>');
-                var smr = response.match(/<li class="smrAwards" title="Qualité Studio Masters (\S+)\s+\S+\s+\/\s+(\S+)\s+\S+\s+-\s+([^"]+)/);
+                var smr = response.match(/<li class="smrAwards" title="[^1-9]*(\S+)\s+\S+\s+\/\s+(\S+)\s+\S+\s+-\s+([^"]+)/);
                 if (smr != null) {
                     tmp                                               = smr[1] + ' / ' + smr[2] + ' / ' + smr[3].trim();
                     divAlbum.firstElementChild.firstElementChild.name = tmp;
