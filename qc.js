@@ -100,16 +100,19 @@ artistssearch.addEventListener('click', function() {
     artistsresults.innerHTML = '';
     artistsname.classList.add('loading');
 
-    for (var i = 0; i != langsLength; i++)
+    var i;
+    for (i = 0; i != langsLength; i++) {
+        try {
+            files[langs[i]].abort();
+        }
+        catch (err) {}
+    }
+
+    for (i = 0; i != langsLength; i++)
         searchLang(langs[i], string);
 }, false);
 
 function searchLang(lang, string) {
-    try {
-        files[lang].abort();
-    }
-    catch (err) {}
-
     var tmp = lang.split(/[\/-]+/g);
 
     files[lang] = new XMLHttpRequest();
@@ -277,8 +280,7 @@ function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, a
                             }
                         }, false);
                         divArtistsHidden.appendChild(divAlbum);
-                        var i = propertyInArray(tmp[2], 'id', albums);
-                        checkAlbumPage(tmp[1], divAlbum, i, albums, artist, divArtist, albumCount);
+                        checkAlbumPage(tmp[1], divAlbum, propertyInArray(tmp[2], 'id', albums), albums, artist, divArtist, albumCount);
                     }
                     else {
                         if (isClosestLang)
@@ -302,8 +304,8 @@ function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, a
     file.send();
 }
 
-function insertAlbum(artist, recentness, divAlbum) {
-    var divArtistRecentNess = document.getElementById(artist + recentness);
+function insertAlbum(artistRecentNess, divAlbum) {
+    var divArtistRecentNess = document.getElementById(artistRecentNess);
     var divAlbumName        = divAlbum.children[1].innerHTML;
     var children            = divArtistRecentNess.children, length = children.length;
     if (length == 0) {
@@ -336,11 +338,13 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
     file.onreadystatechange = function() {
         if (file.readyState == XMLHttpRequest.DONE) {
             if (file.status == 200) {
-                var response = file.responseText;
-                var regExp   = /<span class="track-number">\s*([^<]*)<\/span>\s*<span class="track-title"[^>]*>\s*([^<]*)(?:<i>([^<]*)<\/i>\s*)?<\/span>\s*<\/span>\s*<div [^>]*>\s*(?:<meta [^>]*>\s*)?<span [^>]*>\s*([^<]*)/g;
-                var tracklist = [], tmp;
+                var response  = file.responseText;
+                var regExp    = /<span class="track-number">\s*([^<]*)<\/span>\s*<span class="track-title"[^>]*>\s*([^<]*)(?:<i>([^<]*)<\/i>\s*)?<\/span>\s*<\/span>\s*<div [^>]*>\s*(?:<meta [^>]*>\s*)?<span [^>]*>\s*([^<]*)/g;
+                var tracklist = '', tmp;
                 while ((tmp = regExp.exec(response)) != null)
-                    tracklist.push('<div class="row"><div class="cell">' + tmp[1].trim() + '</div><div class="cell">' + tmp[2].trim() + (tmp[3] != null ? ' ' + tmp[3].trim() : '') + '</div><div class="cell">' + tmp[4].trim() + '</div></div>');
+                    tracklist += '<div class="row"><div class="cell">' + tmp[1].trim() + '</div><div class="cell">' + tmp[2].trim() + (tmp[3] != null ? ' ' + tmp[3].trim() : '') + '</div><div class="cell">' + tmp[4].trim() + '</div></div>';
+                divAlbum.lastElementChild.innerHTML = tracklist;
+
                 var smr = response.match(/<li class="smrAwards" title="[^1-9]*(\S+)\s+\S+\s+\/\s+(\S+)\s+\S+\s+-\s+([^"]+)/);
                 if (smr != null) {
                     tmp                                               = smr[1] + ' / ' + smr[2] + ' / ' + smr[3].trim();
@@ -349,12 +353,10 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
                 }
                 if (i != -1 && (smr == null || albums[i]['smr'] == tmp)) {
                     divAlbum.firstElementChild.firstElementChild.checked = true;
-                    divAlbum.lastElementChild.classList.toggle('hidden');
-                    insertAlbum(artist, 'old', divAlbum);
+                    divAlbum.lastElementChild.classList.remove('hidden');
+                    insertAlbum(artist + 'old', divAlbum);
                 }
-                else insertAlbum(artist, 'new', divAlbum);
-
-                divAlbum.lastElementChild.innerHTML = tracklist.join('');
+                else insertAlbum(artist + 'new', divAlbum);
             }
             else showError(chromeI18n('unreachable'), link, divArtist, true);
 
