@@ -353,7 +353,7 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
                 }
                 if (i != -1 && (smr == null || albums[i]['smr'] == tmp)) {
                     divAlbum.firstElementChild.firstElementChild.checked = true;
-                    divAlbum.lastElementChild.classList.remove('hidden');
+                    divAlbum.lastElementChild.classList.add('hidden');
                     insertAlbum(artist + 'old', divAlbum);
                 }
                 else insertAlbum(artist + 'new', divAlbum);
