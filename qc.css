@@ -47,7 +47,7 @@ div#divArtists {
     div#divArtists.loading {
         width: 128px;
         height: 15px;
-        background: url(ajax-loader-big.gif) no-repeat; }
+        background: url(/images/ajax-loader-big.gif) no-repeat; }
 
 div.artist {
     margin: 0 5px;
@@ -64,8 +64,17 @@ div.new, div.old {
 
 div.new {
     margin-top: 5px;
-    background: lightgray;
     border-radius: 4px; }
+
+div.leftright {
+    vertical-align: top;
+    display: inline-block; }
+    div.leftright > div.new {
+        background: lightgray; }
+    div.leftright + div.leftright {
+        margin-left: 5px; }
+        div.leftright + div.leftright > div.new {
+            background: #e9c2a6; }
 
 div.album + div.album {
     margin-top: 5px; }
@@ -154,11 +163,11 @@ div.cell {
             position: relative;
             z-index: 2; }
         .search-form > input.loading {
-            background: url(ajax-loader.gif) no-repeat, #fcfcfc;
+            background: url(/images/ajax-loader.gif) no-repeat, #fcfcfc;
             background-position: right 7px center;
             padding-right: 30px; }
             .search-form > input.loading:focus {
-                background: url(ajax-loader.gif) no-repeat, white;
+                background: url(/images/ajax-loader.gif) no-repeat, white;
                 background-position: right 7px center;
                 padding-right: 30px; }
     .search-form > .button {

@@ -2,8 +2,7 @@ var langs      = [];
 var artists    = {};
 var files      = {};
 var chromeI18n = chrome.i18n.getMessage;
-var langsLength;
-var closestLang;
+var langsLength, closestLang;
 
 for (var i = 0, tmp, elements = document.getElementsByTagName('*'), length = elements.length; i != length; i++) {
     tmp = elements[i].id;
@@ -85,6 +84,10 @@ function compareStrings(string1, string2) {
     return string1.localeCompare(string2, window.navigator.language, { 'sensitivity': 'accent' });
 }
 
+function convertIntTo2Int(value) {
+    return value < 10 ? '0' + value : value;
+}
+
 function propertyInArray(value, property, array) {
     var i, length;
     for (i = 0, length = array.length; i != length && array[i][property] != value; i++) {}
@@ -149,7 +152,8 @@ function searchLang(lang, string) {
                         checkArtist(value);
                     }, false);
 
-                    for (var i = 0, length = children.length; i != length && compareStrings(children[i].firstElementChild.innerHTML, tmp[2]) < 0; i++) {}
+                    var i, length = children.length;
+                    for (var i = 0; i != length && compareStrings(children[i].firstElementChild.innerHTML, tmp[2]) < 0; i++) {}
                     artistsresults.insertBefore(li, i != length ? children[i] : null);
                 }
             }
@@ -157,7 +161,8 @@ function searchLang(lang, string) {
         else if (file.status != 0)
             showError(chromeI18n('unreachable'), link, container);
 
-        for (var i = 0; i != langsLength && files[langs[i]].readyState == XMLHttpRequest.DONE; i++) {}
+        var i;
+        for (i = 0; i != langsLength && files[langs[i]].readyState == XMLHttpRequest.DONE; i++) {}
         if (i == langsLength) {
             artistsname.classList.remove('loading');
 
@@ -216,7 +221,7 @@ function checkArtist(artist) {
     var divArtist       = document.createElement('div');
     divArtist.id        = artist;
     divArtist.className = 'artist';
-    divArtist.innerHTML = '<p class="alert notice"><a target="_blank">' + artist + '</a><a class="alert-close" title="' + chromeI18n('delete') + '" hidden>&times;</a></p><div id="' + artist + 'progress" class="progress"><span style="width: 0%"></span>0%</div><div id="' + artist + 'new" class="new"></div><div id="' + artist + 'old" class="old"></div>';
+    divArtist.innerHTML = '<p class="alert notice"><a target="_blank">' + artist + '</a><a class="alert-close" title="' + chromeI18n('delete') + '" hidden>&times;</a></p><div id="' + artist + 'progress" class="progress"><span style="width: 0%"></span>0%</div><div class="leftright"><div id="' + artist + 'new" class="new"></div><div id="' + artist + 'old" class="old"></div></div><div class="leftright"><div id="' + artist + 'newvarious" class="new"></div><div id="' + artist + 'oldvarious" class="old"></div></div>';
     divArtist.firstElementChild.lastElementChild.addEventListener('click', function(e) {
         confirmyes.onclick = function() {
             divArtists.removeChild(e.target.parentElement.parentElement);
@@ -227,29 +232,31 @@ function checkArtist(artist) {
         confirmlight.classList.add('visible');
         confirmfade.classList.add('visible');
     }, false);
-    var i = 0, children = divArtists.children, length = children.length;
-    for ( ; i != length && compareStrings(children[i].firstElementChild.firstElementChild.innerHTML, artist) < 0; i++) {}
+    var children = divArtists.children;
+    var length   = children.length;
+    var i;
+    for (i = 0; i != length && compareStrings(children[i].firstElementChild.firstElementChild.innerHTML, artist) < 0; i++) {}
     divArtists.insertBefore(divArtist, i != length ? children[i] : null);
 
-    for (var i = 0; i != langsLength; i++)
+    for (i = 0; i != langsLength; i++)
         checkArtistPage(artists[artist], langs[i], i == closestLang, artist, divArtist, 1);
 }
 
 function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, albumCount) {
-    createXMLHttpRequest('http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums?page=' + page, function(file, link) {
+    createXMLHttpRequest('http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums?iac=1&page=' + page, function(file, link) {
         if (file.status == 200 && file.responseURL.match(new RegExp('^http://www.qobuz.com' + lang + 'interpreter/'))) {
             var response = file.responseText;
             var realName = response.match(/<h1>([^<]*)/)[1];
             if (divArtist.firstElementChild.firstElementChild.href == '') {
-                divArtist.firstElementChild.firstElementChild.href      = 'http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums';
+                divArtist.firstElementChild.firstElementChild.href      = 'http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums?iac=1';
                 divArtist.firstElementChild.firstElementChild.innerHTML = realName;
             }
             else if (isClosestLang && albumCount == null)
-                divArtist.firstElementChild.firstElementChild.href = 'http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums';
+                divArtist.firstElementChild.firstElementChild.href = 'http://www.qobuz.com' + lang + 'interpreter/' + artist + '/download-streaming-albums?iac=1';
 
             var lastPage = 0;
             if (albumCount == null) {
-                regExp = /\?page=([1-9][0-9]*)/g;
+                regExp = /\?iac=1&amp;page=([1-9][0-9]*)/g;
                 while ((tmp = regExp.exec(response)) != null)
                     if (parseInt(tmp[1]) > lastPage)
                         lastPage = parseInt(tmp[1]);
@@ -287,7 +294,7 @@ function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, a
                         }
                     }, false);
                     divArtistsHidden.appendChild(divAlbum);
-                    checkAlbumPage(tmp[1], divAlbum, propertyInArray(tmp[2], 'id', albums), albums, artist, divArtist, albumCount);
+                    checkAlbumPage(tmp[1], divAlbum, propertyInArray(tmp[2], 'id', albums), albums, artist, divArtist, albumCount, realName);
                 }
                 else {
                     if (isClosestLang)
@@ -312,13 +319,15 @@ function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, a
 function insertAlbum(artistRecentNess, divAlbum) {
     var divArtistRecentNess = document.getElementById(artistRecentNess);
     var divAlbumName        = divAlbum.children[1].innerHTML;
-    var children            = divArtistRecentNess.children, length = children.length;
+    var children            = divArtistRecentNess.children;
+    var length              = children.length;
     if (length == 0) {
         divArtistRecentNess.classList.add('visible');
         divArtistRecentNess.appendChild(divAlbum);
     }
     else {
-        for (var i = 0; i != length && compareStrings(children[i].children[1].innerHTML, divAlbumName) < 0; i++) {}
+        var i;
+        for (i = 0; i != length && compareStrings(children[i].children[1].innerHTML, divAlbumName) < 0; i++) {}
         divArtistRecentNess.insertBefore(divAlbum, i != length ? children[i] : null);
     }
 }
@@ -335,15 +344,51 @@ function updateProgress(artist, albumCount) {
     progress.childNodes[1].nodeValue       = parseInt(newProgress) + '%';
 }
 
-function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount) {
+function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount, realName) {
     createXMLHttpRequest('http://www.qobuz.com' + link, function(file, link) {
         if (file.status == 200) {
-            var response  = file.responseText;
-            var regExp    = /<span class="track-number">\s*([^<]*)<\/span>\s*<span class="track-title"[^>]*>\s*([^<]*)(?:<i>([^<]*)<\/i>\s*)?<\/span>\s*<\/span>\s*<div [^>]*>\s*(?:<meta [^>]*>\s*)?<span [^>]*>\s*([^<]*)/g;
-            var tracklist = '', tmp;
+            var response            = file.responseText;
+            var albumArtistIsArtist = (new RegExp('<p class="txt04[^>]*>[^<]*<a[^>]*>' + realName)).test(response);
+            var tracklist           = '';
+            var various             = albumArtistIsArtist ? '' : 'various';
+            var regExp              = /<span class="track-number">\s*([^<]*)<\/span>\s*<span class="track-title"[^>]*>\s*([^<]*(?:<3[^<]*)*)(?:<i>([^<]*)<\/i>\s*)?<\/span>\s*<\/span>\s*<div [^>]*>\s*(?:<meta [^>]*>\s*)?<span [^>]*>\s*([^<]*)/g;
+            var tmp;
             while ((tmp = regExp.exec(response)) != null)
-                tracklist += '<div class="row"><div class="cell">' + tmp[1].trim() + '</div><div class="cell">' + tmp[2].trim() + (tmp[3] != null ? ' ' + tmp[3].trim() : '') + '</div><div class="cell">' + tmp[4].trim() + '</div></div>';
+                tracklist += '<div class="row"><div class="cell">' + convertIntTo2Int(tmp[1].trim()) + '</div><div class="cell">' + tmp[2].trim() + (tmp[3] != null ? ' ' + tmp[3].trim() : '') + '</div><div class="cell">' + tmp[4].trim() + '</div></div>';
             divAlbum.lastElementChild.innerHTML = tracklist;
+
+            if (tracklist != '') {
+                var children = divAlbum.lastElementChild.children;
+                var lengthM1 = children.length - 1;
+                var j;
+                for (j = 0; j != lengthM1; j++)
+                    if (parseInt(children[j].firstElementChild.innerHTML) > parseInt(children[j + 1].firstElementChild.innerHTML))
+                        break;
+                if (j != lengthM1) {
+                    var discNumber = 1;
+                    var tmp2;
+                    for (j = 0; j != lengthM1; j++) {
+                        tmp           = children[j].firstElementChild;
+                        tmp2          = parseInt(tmp.innerHTML);
+                        tmp.innerHTML = discNumber + '.' + tmp.innerHTML;
+                        if (tmp2 > parseInt(children[j + 1].firstElementChild.innerHTML))
+                            discNumber++;
+                    }
+                    tmp           = children[j].firstElementChild;
+                    tmp.innerHTML = discNumber + '.' + tmp.innerHTML;
+                }
+
+                if (!albumArtistIsArtist) {
+                    regExp   = /<p class="track-details [^>]*>\s*<span>([^<]*)/g;
+                    realName = realName.toLowerCase();
+                    j        = 0;
+                    while ((tmp = regExp.exec(response)) != null) {
+                        if (tmp[1].toLowerCase().indexOf(realName) == -1)
+                            divAlbum.lastElementChild.removeChild(children[j]);
+                        else j++;
+                    }
+                }
+            }
 
             var smr = response.match(/<li class="smrAwards" title="[^1-9]*(\S+)\s+\S+\s+\/\s+(\S+)\s+\S+\s+-\s+([^"]+)/);
             if (smr != null) {
@@ -354,9 +399,9 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
             if (i != -1 && (smr == null || albums[i]['smr'] == tmp)) {
                 divAlbum.firstElementChild.firstElementChild.checked = true;
                 divAlbum.lastElementChild.classList.add('hidden');
-                insertAlbum(artist + 'old', divAlbum);
+                insertAlbum(artist + 'old' + various, divAlbum);
             }
-            else insertAlbum(artist + 'new', divAlbum);
+            else insertAlbum(artist + 'new' + various, divAlbum);
         }
         else showError(chromeI18n('unreachable'), link, divArtist, true);
 

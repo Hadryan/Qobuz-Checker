@@ -6,7 +6,7 @@
     "version": "0.0.1",
     "app": {
         "launch": {
-            "local_path": "qc.html"
+            "local_path": "/qc.html"
         }
     },
     "permissions": ["storage", "unlimitedStorage", "http://www.qobuz.com/*"]
