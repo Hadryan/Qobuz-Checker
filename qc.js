@@ -264,16 +264,18 @@ function checkArtistPage(albums, lang, isClosestLang, artist, divArtist, page, a
             }
 
             var regExp = /<div class="album-title">\s*<a href="([^"]*\/([0-9]+))" [^>]*>\s*([^<]*)/g;
-            var tmp;
+            var tmp, albumName;
             while ((tmp = regExp.exec(response)) != null) {
                 var element = document.getElementById(tmp[2]);
                 if (element == null) {
+                    albumName          = tmp[3].trim();
                     var divAlbum       = document.createElement('div');
                     divAlbum.className = 'album';
-                    divAlbum.innerHTML = '<span class="switch unicode"><input id="' + tmp[2] + '" type="checkbox"><label for="' + tmp[2] + '" data-on="✓" data-off="✕"></label></span><a href="http://www.qobuz.com' + tmp[1] + '" target="_blank">' + tmp[3].trim() + '</a><div class="table"></div>';
+                    divAlbum.innerHTML = '<span class="switch unicode"><input id="' + tmp[2] + '" type="checkbox"><label for="' + tmp[2] + '" data-on="✓" data-off="✕"></label></span><a href="http://www.qobuz.com' + tmp[1] + '" target="_blank" title="' + albumName + '">' + albumName + '</a><div class="table"></div>';
                     divAlbum.firstElementChild.firstElementChild.addEventListener('change', function(e) {
                         var element = e.target;
                         var i       = propertyInArray(element.id, 'id', albums);
+                        element.parentElement.parentElement.children[1].classList.toggle('sized');
                         element.parentElement.parentElement.lastElementChild.classList.toggle('hidden');
                         if (element.checked) {
                             if (i == -1) {
@@ -395,9 +397,11 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
                 tmp                                               = smr[1] + ' / ' + smr[2] + ' / ' + smr[3].trim();
                 divAlbum.firstElementChild.firstElementChild.name = tmp;
                 divAlbum.children[1].innerHTML                   += ' {' + tmp + '}';
+                divAlbum.children[1].title                       += ' {' + tmp + '}';
             }
             if (i != -1 && (smr == null || albums[i]['smr'] == tmp)) {
                 divAlbum.firstElementChild.firstElementChild.checked = true;
+                divAlbum.children[1].classList.add('sized');
                 divAlbum.lastElementChild.classList.add('hidden');
                 insertAlbum(artist + 'old' + various, divAlbum);
             }

@@ -76,6 +76,14 @@ div.leftright {
         div.leftright + div.leftright > div.new {
             background: #e9c2a6; }
 
+a.sized {
+    display: inline-block;
+    margin-bottom: -6px;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; }
+
 div.album + div.album {
     margin-top: 5px; }
 
