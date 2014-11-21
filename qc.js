@@ -392,7 +392,7 @@ function checkAlbumPage(link, divAlbum, i, albums, artist, divArtist, albumCount
                 }
             }
 
-            var smr = response.match(/<li class="smrAwards" title="[^1-9]*(\S+)\s+\S+\s+\/\s+(\S+)\s+\S+\s+-\s+([^"]+)/);
+            var smr = response.match(/<li class="smrAwards" title="[^1-9]*24[^1-9]*(\S+)\s+\S+\s+\/\s+(\S+)\s+\S+\s+-\s+([^"]+)/);
             if (smr != null) {
                 tmp                                               = smr[1] + ' / ' + smr[2] + ' / ' + smr[3].trim();
                 divAlbum.firstElementChild.firstElementChild.name = tmp;
