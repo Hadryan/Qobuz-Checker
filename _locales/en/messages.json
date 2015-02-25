@@ -23,7 +23,7 @@
         "message": "This field cannot be empty"
     },
     "jsoncompliant": {
-        "message": "JSON non compliant"
+        "message": "Non-compliant JSON"
     },
     "delete": {
         "message": "Delete"
